@@ -14,14 +14,15 @@ datasource db {
 }
 
 model User {
-  id        Int      @default(autoincrement()) @id
-  email String  @unique
-  cameras Camera[]
+  id              Int       @default(autoincrement()) @id
+  email           String    @unique
+  phone           String
+  cameras         Camera[]
 }
 
 model Camera {
-  id        Int      @default(autoincrement()) @id
-  userId  Int?
-  rtmp  String
-  owner    User?    @relation(fields: [userId], references: [id])
+  id              Int       @default(autoincrement()) @id
+  userId          Int
+  streamKey       String
+  owner           User?     @relation(fields: [userId], references: [id])
 }

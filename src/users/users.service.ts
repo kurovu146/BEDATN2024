@@ -1,14 +1,19 @@
+// users.service.ts
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private readonly prisma: PrismaService
-  ) {}
+  private users = []; // Dùng mảng lưu trữ tạm thời. Bạn có thể thay thế bằng cơ sở dữ liệu.
 
-  async createUser(data: Prisma.UserCreateInput) {
-    return this.prisma.user.create({data});
+  async create(user) {
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    const newUser = { id: Date.now(), ...user, password: hashedPassword };
+    this.users.push(newUser);
+    return newUser;
+  }
+
+  async findOne(username: string) {
+    return this.users.find(user => user.username === username);
   }
 }

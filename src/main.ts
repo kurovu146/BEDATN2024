@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { VersioningType } from '@nestjs/common';
-import { RtmpService } from './rtmp/rtmp.service';
+import { RtmpService } from './common/rtmp.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

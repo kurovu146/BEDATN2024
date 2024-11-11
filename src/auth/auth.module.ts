@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from '../../utils/jwt.strategy';
+import { EmailService } from 'src/common/email.service';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { JwtStrategy } from '../../utils/jwt.strategy';
       signOptions: { expiresIn: '1h' },
     }),
   ],
-  providers: [AuthService, UsersService, JwtStrategy],
+  providers: [AuthService, UsersService, JwtStrategy, EmailService],
   controllers: [AuthController],
 })
 export class AuthModule {}

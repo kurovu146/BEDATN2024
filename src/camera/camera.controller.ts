@@ -1,25 +1,27 @@
-import { Controller, Get, Post, Version } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
-import { generateStreamKey } from '../../utils/common';
+import { Body, Controller, Delete, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { UserGuard } from 'src/auth/user.guard';
+import { CameraService } from './camera.service';
 
-@Controller('camera')
+@Controller('cameras')
 export class CameraController {
   constructor(
-    private readonly prisma: PrismaService
+    private readonly cameraService: CameraService
   ) {}
 
+  @UseGuards(UserGuard)
   @Post()
-  @Version('1')
-  async createCamera() {
-    const streamKey = generateStreamKey();
-    // return this.prisma.camera.create({
-    //   data: {rtmp: newRtmpServer.url},
-    // });
+  async createCamera(@Body() body) {
+    return this.cameraService.createCamera(body.streamKey, body.userId, body.lat, body.lng, body.country, body.city, body.district);
   }
 
+  @UseGuards(UserGuard)
   @Get()
-  @Version('1')
-  async getAllCamera() {
-    return this.prisma.camera.findFirst();
+  async getAllCamera(@Query() body) {
+    return this.cameraService.getAllCamera(+body.userId);
+  }
+
+  @Delete()
+  deleteAll() {
+    return this.cameraService.deleteAll();
   }
 }

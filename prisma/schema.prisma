@@ -30,4 +30,9 @@ model Camera {
   userId          Int
   streamKey       String
   owner           User?     @relation(fields: [userId], references: [id])
+  lat             String
+  lng             String
+  country         String
+  city            String
+  district        String
 }

@@ -16,13 +16,15 @@ export class EmailService {
   }
 
   async sendConfirmationEmail(email: string, token: string) {
-    const confirmUrl = `${process.env.API_URL}/auth/confirm?token=${token}`;
+    const confirmUrl = `${process.env.API_URL}/api/auth/confirm?token=${token}`;
     await this.transporter.sendMail({
       from: '"Your App" <your-email@gmail.com>',
       to: email,
       subject: 'Email Confirmation',
       text: `Please confirm your email by clicking on the following link: ${confirmUrl}`,
-      html: `<a href="${confirmUrl}">Confirm your email</a>`,
+      html: ` <div>Please confirm your email by clicking on the following link:</div>
+              <a href="${confirmUrl}">Confirm your email</a>
+            `,
     });
   }
 }

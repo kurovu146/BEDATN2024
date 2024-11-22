@@ -17,6 +17,7 @@ model User {
   id                 Int      @id @default(autoincrement())
   email              String   @unique
   password           String
+  avatar             String   @default("https://www.gravatar.com/avatar/3b3be63a4c2a439b013787725dfce802?d=identicon")
   isEmailConfirmed   Boolean  @default(false)
   confirmationToken  String?
   cameras            Camera[]

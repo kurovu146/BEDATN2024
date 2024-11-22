@@ -1,8 +1,8 @@
-import { Controller, Post, Body, Query, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, Query, UnauthorizedException, UseGuards, HttpStatus, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { EmailService } from 'src/common/email.service';
-
+import { AppError } from '../../utils/error';
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -11,8 +11,8 @@ export class AuthController {
     private emailService: EmailService,
   ) {}
 
-  @Post('register')
-  async register(@Body() user) {
+  @Post('signup')
+  async signup(@Body() user) {
     const newUser = await this.usersService.create(user);
     await this.emailService.sendConfirmationEmail(newUser.email, newUser.confirmationToken);
 
@@ -23,13 +23,13 @@ export class AuthController {
   async login(@Body() req) {
     const user = await this.authService.validateUser(req.email, req.password);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new AppError('Email or password is invalid!', HttpStatus.NOT_FOUND);
     }
-
+    
     return this.authService.login(user);
   }
 
-  @Post('confirm')
+  @Get('confirm')
   async confirmEmail(@Query('token') token: string) {
     const user = await this.usersService.findByConfirmationToken(token);
     if (!user) {

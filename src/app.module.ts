@@ -6,6 +6,7 @@ import { CameraModule } from './camera/camera.module';
 import { PrismaModule } from 'prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { RecordModule } from './record/record.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { AuthModule } from './auth/auth.module';
     CameraModule,
     PrismaModule,
     UsersModule,
-    AuthModule
+    AuthModule,
+    RecordModule
   ],
   controllers: [AppController],
   providers: [AppService],

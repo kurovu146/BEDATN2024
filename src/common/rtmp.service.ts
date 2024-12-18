@@ -1,5 +1,6 @@
 import NodeMediaServer from 'node-media-server';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
+import treeKill from 'tree-kill';
 
 export class RtmpService {
   private recordProcesses: Map<string, ChildProcessWithoutNullStreams> = new Map();
@@ -37,17 +38,16 @@ export class RtmpService {
   }
 
   startRecord(streamKey: string): string {
-    const filePath = `./${streamKey.replace(/\//g, '_')}${Date.now()}.mp4`;
+    const filePath = `recordings/${streamKey.replace(/\//g, '_')}${Date.now()}.mp4`;
     const ffmpegProcess = spawn('ffmpeg', [
-      '-i', `rtmp://127.0.0.1:1935/live/${streamKey}`, // Input stream
-      '-c:v', 'libx264',                             // Codec video
-      '-preset', 'ultrafast',                        // Cài đặt tốc độ
-      '-c:a', 'aac',                                 // Codec âm thanh
-      '-f', 'mp4',                                   // Định dạng file
-      '-movflags', '+faststart', // Đặt metadata ở đầu file
-      '-y',
-      'output.mp4',       // Đường dẫn tệp đầu ra
-    ]);
+      '-i', `rtmp://127.0.0.1:1935/live/${streamKey}`,  // Input stream
+      '-c:v', 'libx264',                                // Codec video
+      '-preset', 'ultrafast',                           // Cài đặt tốc độ
+      '-c:a', 'aac',                                    // Codec âm thanh
+      '-f', 'mp4',                                      // Định dạng file
+      '-movflags', '+faststart',                        // Đặt metadata ở đầu file
+      '-y', filePath,                                   // Đường dẫn tệp đầu ra
+    ], {shell : true});
 
     this.recordProcesses.set(streamKey, ffmpegProcess);
 
@@ -55,8 +55,8 @@ export class RtmpService {
       console.log(`[FFmpeg data] ${data}`);
     });
 
-    ffmpegProcess.on('close', (code) => {
-      console.log(`[FFmpeg Closed] code=${code}`);
+    ffmpegProcess.on('close', (code, signal) => {
+      console.log(`[FFmpeg Closed] code=${code} signal = ${signal}`);
     });
 
     return filePath;
@@ -66,7 +66,8 @@ export class RtmpService {
     const process = this.recordProcesses.get(streamKey);
 
     if (process) {
-      process.kill('SIGTERM'); // Kết thúc quá trình ghi
+      process.stdin.write("q\n");
+      process.kill('SIGINT');
       this.recordProcesses.delete(streamKey);
     }
   }

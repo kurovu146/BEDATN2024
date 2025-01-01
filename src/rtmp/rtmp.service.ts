@@ -2,9 +2,16 @@ import NodeMediaServer from 'node-media-server';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import { firebaseStorage } from '../common/firebase.service';
 import { unlink } from 'fs';
+import { Injectable } from '@nestjs/common';
+import { RecordService } from 'src/record/record.service';
 
+@Injectable()
 export class RtmpService {
   private recordProcesses: Map<string, ChildProcessWithoutNullStreams> = new Map();
+  
+  constructor(
+    private recordService: RecordService
+  ) {}
 
   async createRtmpServer() {
     const nodeMediaServer = new NodeMediaServer({
@@ -38,7 +45,7 @@ export class RtmpService {
     });
   }
 
-  startRecord(streamKey: string): string {
+  async startRecord(userId: number, streamKey: string): Promise<string> {
     const filePath = `recordings/${streamKey.replace(/\//g, '_')}${Date.now()}.mp4`;
     const ffmpegProcess = spawn('ffmpeg', [
       '-i', `rtmp://127.0.0.1:1935/live/${streamKey}`,  // Input stream
@@ -67,8 +74,7 @@ export class RtmpService {
               contentType: 'video/mp4',
             },
           });
-
-          console.log(`File uploaded successfully: ${file.metadata.mediaLink}`, file.metadata);
+          await this.recordService.create({userId, url: file.metadata.mediaLink});
 
           // Xóa file cục bộ sau khi upload
           unlink(filePath, (err) => {

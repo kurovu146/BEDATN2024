@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { RtmpService } from './rtmp/rtmp.service';
+import { RtmpModule } from './rtmp/rtmp.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -13,7 +14,10 @@ async function bootstrap() {
   //   prefix: 'v',               // Sử dụng 'v' làm tiền tố cho version
   // });
   app.listen(process.env.PORT ?? 3001);
-  const stream = new RtmpService()
-  stream.createRtmpServer()
+
+  const app1 = await NestFactory.create(RtmpModule, { cors: true });
+
+  const rtmpService = app1.get(RtmpService);
+  rtmpService.createRtmpServer();
 }
 bootstrap();

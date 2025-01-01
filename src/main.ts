@@ -1,10 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { VersioningType } from '@nestjs/common';
-import { RtmpService } from './common/rtmp.service';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { RtmpService } from './rtmp/rtmp.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
+  app.useGlobalPipes(new ValidationPipe());
   app.enableCors();
   app.setGlobalPrefix('api'); // Thiết lập tiền tố 'api' cho tất cả các route
   // app.enableVersioning({

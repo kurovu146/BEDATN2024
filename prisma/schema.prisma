@@ -27,8 +27,9 @@ model User {
   confirmationToken  String?
   role               Role     @default(USER)
   cameras            Camera[]
+  records            Record[]
   createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  updatedAt          DateTime? @updatedAt
 }
 
 model Camera {
@@ -41,4 +42,15 @@ model Camera {
   country         String
   city            String
   district        String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime? @updatedAt
+}
+
+model Record {
+  id              Int       @default(autoincrement()) @id
+  userId          Int
+  owner           User      @relation(fields: [userId], references: [id])
+  url             String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime? @updatedAt
 }

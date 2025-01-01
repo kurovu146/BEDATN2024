@@ -8,5 +8,6 @@ import { EmailService } from 'src/common/email.service';
   imports: [PrismaModule],
   controllers: [UsersController],
   providers: [UsersService, EmailService],
+  exports: [UsersService]
 })
 export class UsersModule {}

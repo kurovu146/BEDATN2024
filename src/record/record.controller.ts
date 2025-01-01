@@ -1,5 +1,5 @@
 import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
-import { RtmpService } from 'src/common/rtmp.service';
+import { RtmpService } from 'src/rtmp/rtmp.service';
 
 @Controller('records')
 export class RecordController {

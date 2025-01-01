@@ -1,6 +1,6 @@
 import NodeMediaServer from 'node-media-server';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import { firebaseStorage } from './firebase.service';
+import { firebaseStorage } from '../common/firebase.service';
 import { unlink } from 'fs';
 
 export class RtmpService {

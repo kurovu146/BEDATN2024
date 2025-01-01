@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 import { PrismaService } from 'prisma/prisma.service';
+import { AppError } from 'utils/error';
 
 @Injectable()
 export class UsersService {
@@ -14,8 +15,6 @@ export class UsersService {
   async create(user) {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     const confirmationToken = randomBytes(32).toString('hex');
-    console.log(user);
-    
     const newUser: Prisma.UserCreateInput = {
       email: user.email,
       password: hashedPassword,
@@ -41,6 +40,16 @@ export class UsersService {
         confirmationToken: token
       }
     });
+  }
+
+  async update(id: number, data: Prisma.UserUpdateInput) {
+    try {
+      await this.prisma.user.update({where: { id }, data });
+
+      return `Update user ID: ${id} successfully!`;
+    } catch (error) {
+      throw new AppError(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   async confirmEmail(userId: number) {

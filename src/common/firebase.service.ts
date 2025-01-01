@@ -5,7 +5,7 @@ const serviceAccount: ServiceAccount = JSON.parse(process.env.FIREBASE_CONFIG ||
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: 'free-to-earn-80166.appspot.com', // Thay bằng bucket của bạn
+  storageBucket: process.env.STORAGE_BUCKET, // Thay bằng bucket của bạn
 });
 
 export const firebaseStorage = admin.storage().bucket();

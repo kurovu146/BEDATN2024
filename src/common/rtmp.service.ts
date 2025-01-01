@@ -1,6 +1,7 @@
 import NodeMediaServer from 'node-media-server';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import treeKill from 'tree-kill';
+import { firebaseStorage } from './firebase.service';
+import { unlink } from 'fs';
 
 export class RtmpService {
   private recordProcesses: Map<string, ChildProcessWithoutNullStreams> = new Map();
@@ -55,8 +56,34 @@ export class RtmpService {
       console.log(`[FFmpeg data] ${data}`);
     });
 
-    ffmpegProcess.on('close', (code, signal) => {
-      console.log(`[FFmpeg Closed] code=${code} signal = ${signal}`);
+    ffmpegProcess.on('close', async (code) => {
+      if (code !== 1) {
+        console.log(`Uploading file ${filePath} to Firebase...`);
+        try {
+          // Upload file lên Firebase
+          const [file] = await firebaseStorage.upload(filePath, {
+            destination: `videos/${streamKey}_${Date.now()}.mp4`, // Đường dẫn lưu trữ trên Firebase
+            metadata: {
+              contentType: 'video/mp4',
+            },
+          });
+
+          console.log(`File uploaded successfully: ${file.metadata.mediaLink}`, file.metadata);
+
+          // Xóa file cục bộ sau khi upload
+          unlink(filePath, (err) => {
+            if (err) {
+              console.error(`Error deleting local file: ${err}`);
+            } else {
+              console.log(`Local file deleted: ${filePath}`);
+            }
+          });
+        } catch (error) {
+          console.error('Error uploading to Firebase:', error);
+        }
+      } else {
+        console.error(`Recording process exited with code ${code}`);
+      }
     });
 
     return filePath;

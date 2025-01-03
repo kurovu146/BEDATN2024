@@ -7,10 +7,11 @@ export class CameraService {
     private readonly prisma: PrismaService
   ) {}
 
-  async createCamera(streamKey: string, userId: number, lat: string, lng: string, country: string, city: string, district: string) {
+  async createCamera(streamKey: string, url: string, userId: number, lat: string, lng: string, country: string, city: string, district: string) {
     return this.prisma.camera.create({
       data: {
         streamKey,
+        url,
         userId,
         lat,
         lng,

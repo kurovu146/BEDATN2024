@@ -36,6 +36,7 @@ model Camera {
   id              Int       @default(autoincrement()) @id
   userId          Int
   streamKey       String
+  url             String?
   owner           User?     @relation(fields: [userId], references: [id])
   lat             String
   lng             String

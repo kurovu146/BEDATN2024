@@ -11,7 +11,7 @@ export class CameraController {
   @UseGuards(UserGuard)
   @Post()
   async createCamera(@Body() body) {
-    return this.cameraService.createCamera(body.streamKey, body.userId, body.lat, body.lng, body.country, body.city, body.district);
+    return this.cameraService.createCamera(body.streamKey, body.url, body.userId, body.lat, body.lng, body.country, body.city, body.district);
   }
 
   @UseGuards(UserGuard)

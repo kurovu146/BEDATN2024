@@ -20,9 +20,7 @@ export class RecordService {
     if (!userId) {
       throw new AppError('User not found!', HttpStatus.NOT_FOUND);
     }
-    const records = await this.prisma.record.findMany({where: {userId}});
-
-    return records.map(item => {return item.url});
+    return this.prisma.record.findMany({where: {userId}});
   }
 
   async delete(id: number) {

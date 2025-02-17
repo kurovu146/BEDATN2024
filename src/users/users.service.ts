@@ -18,7 +18,6 @@ export class UsersService {
     const newUser: Prisma.UserCreateInput = {
       email: user.email,
       password: hashedPassword,
-      isEmailConfirmed: false,
       confirmationToken,
     };
 

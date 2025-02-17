@@ -1,6 +1,6 @@
 import NodeMediaServer from 'node-media-server';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import { firebaseStorage } from '../common/firebase.service';
+import { FirebaseService } from '../common/firebase.service';
 import { unlink } from 'fs';
 import { Injectable } from '@nestjs/common';
 import { RecordService } from 'src/record/record.service';
@@ -10,7 +10,8 @@ export class RtmpService {
   private recordProcesses: Map<string, ChildProcessWithoutNullStreams> = new Map();
   
   constructor(
-    private recordService: RecordService
+    private recordService: RecordService,
+    private firebaseService: FirebaseService
   ) {}
 
   async createRtmpServer() {
@@ -47,6 +48,7 @@ export class RtmpService {
 
   async startRecord(userId: number, streamKey: string): Promise<string> {
     const filePath = `recordings/${streamKey.replace(/\//g, '_')}${Date.now()}.mp4`;
+    const bucket = this.firebaseService.getStorageBucket();
     const ffmpegProcess = spawn('ffmpeg', [
       '-i', `rtmp://127.0.0.1:1935/live/${streamKey}`,  // Input stream
       '-c:v', 'libx264',                                // Codec video
@@ -68,7 +70,7 @@ export class RtmpService {
         console.log(`Uploading file ${filePath} to Firebase...`);
         try {
           // Upload file lên Firebase
-          const [file] = await firebaseStorage.upload(filePath, {
+          const [file] = await bucket.upload(filePath, {
             destination: `videos/${streamKey}_${Date.now()}.mp4`, // Đường dẫn lưu trữ trên Firebase
             metadata: {
               contentType: 'video/mp4',
